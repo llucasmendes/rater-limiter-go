@@ -69,6 +69,18 @@ Isso executará os testes definidos no projeto e exibirá os resultados detalhad
 
 Uma vez que o servidor esteja em execução, você pode fazer requisições para `http://localhost:8080/` para verificar se o rate limiter está funcionando. O rate limiter irá restringir requisições com base no endereço IP ou no token de acesso conforme configurado.
 
+Enviar uma requisição HTTP simples:
+
+```sh
+curl -X GET http://localhost:8080/
+```
+
+Enviar múltiplas requisições rapidamente para testar o limite por IP:
+Execute o seguinte comando várias vezes rapidamente para testar se o rate limiter bloqueia as requisições adicionais após atingir o limite.
+
+```sh
+for i in {1..10}; do curl -X GET http://localhost:8080/; done
+```
 ## Documentação
 
 A lógica do rate limiter está implementada em `limiter.go` e a integração com o servidor web está em `middleware.go`. As configurações são carregadas em `config.go` a partir do arquivo `.env`.
