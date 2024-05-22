@@ -87,6 +87,14 @@ A lógica do rate limiter está implementada em `limiter.go` e a integração co
 
 O rate limiter utiliza Redis para armazenamento e as requisições que excedem o limite configurado receberão uma resposta HTTP 429 com a mensagem "you have reached the maximum number of requests or actions allowed within a certain time frame".
 
+## Implementação do Padrão Strategy
+
+Para permitir a troca fácil do mecanismo de persistência, foi criada uma interface RateLimiterStore em store.go, que define as operações necessárias (Incr e Expire). A implementação específica para Redis foi feita na struct RedisStore.
+
+Para usar um novo mecanismo de persistência, basta criar uma nova implementação da interface RateLimiterStore e utilizá-la na criação do RateLimiter.
+
+O rate limiter utiliza Redis para armazenamento e as requisições que excedem o limite configurado receberão uma resposta HTTP 429 com a mensagem "you have reached the maximum number of requests or actions allowed within a certain time frame".
+
 ## Contribuições
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou pull requests.

@@ -3,25 +3,40 @@ package main
 import (
 	"context"
 	"testing"
-
-	"github.com/go-redis/redis/v8"
+	"time"
 )
+
+type MockStore struct {
+	data     map[string]int64
+	expiries map[string]time.Duration
+}
+
+func NewMockStore() *MockStore {
+	return &MockStore{
+		data:     make(map[string]int64),
+		expiries: make(map[string]time.Duration),
+	}
+}
+
+func (m *MockStore) Incr(ctx context.Context, key string) (int64, error) {
+	m.data[key]++
+	return m.data[key], nil
+}
+
+func (m *MockStore) Expire(ctx context.Context, key string, duration time.Duration) error {
+	m.expiries[key] = duration
+	return nil
+}
 
 func TestRateLimiter(t *testing.T) {
 	config := Config{
-		RedisAddr:      "localhost:6379",
-		RedisPassword:  "",
 		RateLimitIP:    5,
 		RateLimitToken: 10,
 		BlockDuration:  60,
 	}
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     config.RedisAddr,
-		Password: config.RedisPassword,
-		DB:       0,
-	})
 
-	limiter := NewRateLimiter(rdb, config)
+	store := NewMockStore()
+	limiter := NewRateLimiter(store, config)
 	ctx := context.Background()
 	key := "test-ip"
 

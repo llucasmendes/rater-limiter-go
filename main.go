@@ -17,7 +17,8 @@ func main() {
 		DB:       0,
 	})
 
-	limiter := NewRateLimiter(rdb, config)
+	store := NewRedisStore(rdb)
+	limiter := NewRateLimiter(store, config)
 
 	r := mux.NewRouter()
 	r.Use(RateLimitMiddleware(limiter))
